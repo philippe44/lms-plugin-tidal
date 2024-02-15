@@ -1,0 +1,28 @@
+name: Build and Tag
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Zip repository
+        run: zip -r repo.zip .
+
+      - name: Set up Perl
+        uses: actions/setup-perl@v1
+        with:
+          perl-version: '5.x'
+
+      - name: Generate tag
+        id: generate-tag
+        run: |
+          #tag=$(perl generate_tag.pl)
+          echo "::set-output name=tag::$tag"
