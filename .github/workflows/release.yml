@@ -17,5 +17,5 @@ jobs:
       - name: Set up Versio and SHA
         id: tag
         run: |
-          perl release.pl
+          perl release.pl repo.zip
           
