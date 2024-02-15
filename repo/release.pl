@@ -13,7 +13,7 @@ my $install = XMLin('install.xml', KeepRoot => 0, KeyAttr => '', NoAttr => 0);
 my $version = $install->{version};
 print("$version\n");
 	
-my $repo = XMLin('repo.xml', ForceArray => 1, KeepRoot => 0, KeyAttr => 0, NoAttr => 0);
+my $repo = XMLin('repo/repo.xml', ForceArray => 1, KeepRoot => 0, KeyAttr => 0, NoAttr => 0);
 $repo->{plugins}[0]->{plugin}[0]->{version} = $version;
 	
 open (my $fh, "<", $zipfile);
@@ -24,6 +24,7 @@ $digest->addfile($fh);
 close $fh;
 
 $repo->{plugins}[0]->{plugin}[0]->{sha}[0] = $digest->hexdigest;
+print("sha ", $digest->hexdigest);
 
 $url .= "/$zipfile";
 $repo->{plugins}[0]->{plugin}[0]->{url}[0] = $url;
