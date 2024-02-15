@@ -17,6 +17,7 @@ jobs:
       - name: Set up Versio and SHA
         id: tag
         run: |
+          cpan install XML::Simple
           perl repo/release.pl repo.zip
 
       - name: stage changed files
