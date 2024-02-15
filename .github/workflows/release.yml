@@ -18,7 +18,7 @@ jobs:
 
       - name: Install Perl modules
         run: |
-          cpanm XML::Simple
+          cpanm XML::Simple Digest::SHA1
 
       - name: Zip repository
         run: zip -r repo.zip .
