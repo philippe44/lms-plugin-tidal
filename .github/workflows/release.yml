@@ -14,13 +14,9 @@ jobs:
       - name: Setup Perl
         uses: shogo82148/actions-setup-perl@v1
         with:
-          #perl-version: '5.34'
-          #install-modules-with: cpanm
-          #install-modules-args: --with-develop --with-configure
+          perl-version: '5.34'
           install-modules: XML::Simple Digest::SHA1
-          
-      #- run: prove -lv t          
-      
+
       - name: Zip repository
         run: zip -r repo.zip .
 
