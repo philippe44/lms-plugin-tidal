@@ -9,17 +9,18 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Perl
         uses: shogo82148/actions-setup-perl@v1
         with:
-          perl-version: '5.34'
-
-      - name: Install Perl modules
-        run: |
-          cpanm XML::Simple Digest::SHA1
-
+          #perl-version: '5.34'
+          #install-modules-with: cpanm
+          #install-modules-args: --with-develop --with-configure
+          install-modules: XML::Simple Digest::SHA1
+          
+      #- run: prove -lv t          
+      
       - name: Zip repository
         run: zip -r repo.zip .
 
