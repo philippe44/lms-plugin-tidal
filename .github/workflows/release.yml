@@ -21,9 +21,9 @@ jobs:
           ls -al
           #perl release.pl repo.zip
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: repo
-          path: repo.zip
-          
+      - name: stage changed files
+        run: |
+          git add .
+          git commit -m "updating repo.xml"
+          git fetch origin main
+          git push origin HEAD:main          
