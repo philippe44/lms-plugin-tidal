@@ -14,13 +14,8 @@ jobs:
       - name: Zip repository
         run: zip -r repo.zip .
 
-      - name: Set up Perl
-        uses: actions/setup-perl@v1
-        with:
-          perl-version: '5.x'
-
-      - name: Generate tag
-        id: generate-tag
+      - name: Set up Versio and SHA
+        id: tag
         run: |
-          #tag=$(perl generate_tag.pl)
-          echo "::set-output name=tag::$tag"
+          perl release.pl
+          
