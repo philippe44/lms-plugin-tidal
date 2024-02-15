@@ -18,5 +18,6 @@ jobs:
         id: tag
         run: |
           pwd 
+          ls -al
           #perl release.pl repo.zip
           
