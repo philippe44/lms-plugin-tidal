@@ -17,9 +17,7 @@ jobs:
       - name: Set up Versio and SHA
         id: tag
         run: |
-          pwd 
-          ls -al
-          #perl release.pl repo.zip
+          perl repo/release.pl repo.zip
 
       - name: stage changed files
         run: |
