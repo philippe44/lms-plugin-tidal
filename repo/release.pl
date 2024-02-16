@@ -6,10 +6,10 @@ use File::Basename;
 use Data::Dumper;
 use Digest::SHA1 qw(sha1 sha1_hex);
 
-my $url = $ARGV[3];
-my $zipfile = $ARGV[2];
 my $repofile = $ARGV[0];
 my $version = $ARGV[1];
+my $zipfile = $ARGV[2];
+my $url = $ARGV[3];
 
 =comment
 my $install = XMLin('install.xml', KeepRoot => 0, KeyAttr => '', NoAttr => 0);
