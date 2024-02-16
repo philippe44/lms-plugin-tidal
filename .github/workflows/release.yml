@@ -35,7 +35,7 @@ jobs:
 
       - name: Zip repository
         id: zip
-        run: zip TIDAL -r API *.pm ProtocolHandler HTML Settings install.xml
+        run: zip TIDAL -r API *.pm HTML Settings install.xml
 
       - name: Setup Perl
         uses: shogo82148/actions-setup-perl@v1
