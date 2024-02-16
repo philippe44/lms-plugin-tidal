@@ -30,18 +30,15 @@ jobs:
               const xml = fs.readFileSync('install.xml', 'utf8');
               const version = xml.match(/<version>([^<]+)<\/version>/)[1];
               console.log(`::set-output name=version::${version}`);
-    
-      - name: Use version
-        run: echo "Version is ${{ steps.set-version.outputs.version }}"        
-     
+        
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: release
-          release_name: ${{ steps.set-version.outputs.version }}
+          tag_name: tag-${{ steps.set-version.outputs.version }}
+          release_name: v${{ steps.set-version.outputs.version }}
           body: TIDAL plugin release
           draft: false
           prerelease: false
