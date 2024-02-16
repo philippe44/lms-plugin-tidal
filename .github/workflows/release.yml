@@ -26,6 +26,7 @@ jobs:
           perl repo/release.pl TIDAL.zip
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
+          name: TIDAL.zip
           path: TIDAL.zip
