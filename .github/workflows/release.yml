@@ -19,7 +19,9 @@ jobs:
               const fs = require('fs');
               const xml = fs.readFileSync('install.xml', 'utf8');
               const version = xml.match(/<version>([^<]+)<\/version>/)[1];
-              console.log(`::set-output name=version::${version}`);
+              echo "{version}=${version}" >> $GITHUB_OUTPUT
+              #run: echo "::set-output name={name}::{value}"
+              #console.log(`::set-output name=version::${version}`);
         
       - name: Create Release
         id: create_release
