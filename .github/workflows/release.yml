@@ -51,7 +51,6 @@ jobs:
         run: |
           perl repo/release.pl repo/repo.xml ${{ steps.set-version.outputs.version }} TIDAL.zip ${{ steps.create_release.outputs.html_url }} 
           cat repo/repo.xml
-          - name: Update file
           
       - name: Update repo.xml without a commit
         uses: actions/github-script@v6
