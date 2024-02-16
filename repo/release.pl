@@ -25,12 +25,11 @@ $digest->addfile($fh);
 close $fh;
 
 $repo->{plugins}[0]->{plugin}[0]->{sha}[0] = $digest->hexdigest;
-print("sha ", $digest->hexdigest);
+print("sha \n", $digest->hexdigest);
 
 $url .= "/$zipfile";
 $repo->{plugins}[0]->{plugin}[0]->{url}[0] = $url;
-print("$repofile $url\n");
 
-XMLout($repo, RootName => 'extensions', NoSort => 1, XMLDecl => 1, KeyAttr => '', OutputFile => 'new.xml', NoAttr => 0);
+XMLout($repofile, RootName => 'extensions', NoSort => 1, XMLDecl => 1, KeyAttr => '', OutputFile => 'new.xml', NoAttr => 0);
 
 
