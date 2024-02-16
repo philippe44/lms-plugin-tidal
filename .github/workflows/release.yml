@@ -54,12 +54,13 @@ jobs:
 
       - name: Update file
         run: |
+          base64Content=$(base64 < repo/repo.xml)
           curl -X PUT \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             -d '{
               "message": "Update file",
-              "content": "new content",
+              "content": "'"$base64Content"'",
               "sha": "${{ github.sha }}"
             }' \
             "https://api.github.com/repos/${{ github.repository }}/contents/repo/repo.xml2"
