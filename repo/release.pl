@@ -21,7 +21,7 @@ $digest->addfile($fh);
 close $fh;
 
 $repo->{plugins}[0]->{plugin}[0]->{sha}[0] = $digest->hexdigest;
-print("sha \n", $digest->hexdigest);
+print("version:$version sha:", $digest->hexdigest, "\n");
 
 $url .= "/$zipfile";
 $repo->{plugins}[0]->{plugin}[0]->{url}[0] = $url;
