@@ -6,8 +6,8 @@ use File::Basename;
 use Data::Dumper;
 use Digest::SHA1 qw(sha1 sha1_hex);
 
-my $url = $ARGV[2];
-my $zipfile = $ARGV[1];
+my $url = $ARGV[1];
+my $zipfile = $ARGV[0];
 
 my $install = XMLin('install.xml', KeepRoot => 0, KeyAttr => '', NoAttr => 0);
 my $version = $install->{version};
