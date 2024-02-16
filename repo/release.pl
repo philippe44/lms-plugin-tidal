@@ -30,6 +30,6 @@ print("sha \n", $digest->hexdigest);
 $url .= "/$zipfile";
 $repo->{plugins}[0]->{plugin}[0]->{url}[0] = $url;
 
-XMLout($repofile, RootName => 'extensions', NoSort => 1, XMLDecl => 1, KeyAttr => '', OutputFile => 'new.xml', NoAttr => 0);
+XMLout($repo, RootName => 'extensions', NoSort => 1, XMLDecl => 1, KeyAttr => '', OutputFile => $repofile, NoAttr => 0);
 
 
