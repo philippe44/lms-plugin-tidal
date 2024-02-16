@@ -46,6 +46,8 @@ jobs:
       - name: Update SHA and Version in repo.xml
         id: tag
         run: |
+          url = https://github.com/${{ github.repository }}/releases/download/${{ steps.set-version.outputs.version }}
+          echo $url
           perl repo/release.pl repo/repo.xml ${{ steps.set-version.outputs.version }} TIDAL.zip ${{ steps.create_release.outputs.html_url }} 
 
       - name: Update file
