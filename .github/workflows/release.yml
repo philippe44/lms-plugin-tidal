@@ -54,16 +54,11 @@ jobs:
 
       - name: Update file
         run: |
-          base64Content=$(base64 < repo/repo.xml)
-          curl -X PUT \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            -d '{
-              "message": "Update file",
-              "content": "'"$base64Content"'",
-              "sha": "${{ github.sha }}"
-            }' \
-            "https://api.github.com/repos/${{ github.repository }}/contents/repo/repo.xml2"
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add repo/repo.xml
+          git commit -m "update repo.xml for release ${{ steps.set-version.outputs.version }}"
+          git push origin HEAD:main
           
       - name: Upload Release Asset
         id: upload-release-asset 
@@ -75,7 +70,6 @@ jobs:
           asset_path: ./TIDAL.zip
           asset_name: TIDAL.zip
           asset_content_type: application/zip
-
           
 
       
