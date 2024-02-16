@@ -6,14 +6,15 @@ use File::Basename;
 use Data::Dumper;
 use Digest::SHA1 qw(sha1 sha1_hex);
 
-my $url = $ARGV[1];
-my $zipfile = $ARGV[0];
+my $url = $ARGV[2];
+my $zipfile = $ARGV[1];
+my $repofile = $ARGV[0];
 
 my $install = XMLin('install.xml', KeepRoot => 0, KeyAttr => '', NoAttr => 0);
 my $version = $install->{version};
 print("$version\n");
 	
-my $repo = XMLin('repo/repo.xml', ForceArray => 1, KeepRoot => 0, KeyAttr => 0, NoAttr => 0);
+my $repo = XMLin($repofile, ForceArray => 1, KeepRoot => 0, KeyAttr => 0, NoAttr => 0);
 $repo->{plugins}[0]->{plugin}[0]->{version} = $version;
 	
 open (my $fh, "<", $zipfile);
@@ -28,6 +29,7 @@ print("sha ", $digest->hexdigest);
 
 $url .= "/$zipfile";
 $repo->{plugins}[0]->{plugin}[0]->{url}[0] = $url;
+print("$repofile $url\n");
 
 XMLout($repo, RootName => 'extensions', NoSort => 1, XMLDecl => 1, KeyAttr => '', OutputFile => 'new.xml', NoAttr => 0);
 
