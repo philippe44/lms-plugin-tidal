@@ -1,11 +1,11 @@
 <?xml version='1.0' standalone='yes'?>
 <extensions>
   <plugins>
-    <plugin minTarget="8.3" name="TIDAL" maxTarget="*" version="0.3.0">
-      <title lang="EN">TIDAL local</title>
-      <sha>1191234f994178d983cc1edf10c728295ae818e3</sha>
+    <plugin maxTarget="*" version="0.3.0" name="TIDAL" minTarget="8.3">
       <url>https://github.com/philippe44/lms-plugin-tidal/releases/tag/0.3.0/TIDAL.zip</url>
       <desc lang="EN">TIDAL for local LMS use</desc>
+      <sha>ef60fcd1998c0579043f0cdc10935f047c462e37</sha>
+      <title lang="EN">TIDAL local</title>
     </plugin>
   </plugins>
 </extensions>
