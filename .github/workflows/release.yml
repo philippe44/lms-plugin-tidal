@@ -27,8 +27,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: tag-${{ steps.set-version.outputs.version }}
-          release_name: v${{ steps.set-version.outputs.version }}
+          tag_name: ${{ steps.set-version.outputs.version }}
+          release_name: version ${{ steps.set-version.outputs.version }}
           body: TIDAL plugin release
           draft: false
           prerelease: false
@@ -47,7 +47,6 @@ jobs:
         id: tag
         run: |
           perl repo/release.pl repo/repo.xml ${{ steps.set-version.outputs.version }} TIDAL.zip ${{ steps.create_release.outputs.html_url }} 
-          cat repo/repo.xml
 
       - name: Update file
         run: |
