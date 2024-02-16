@@ -11,16 +11,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup Perl
-        uses: shogo82148/actions-setup-perl@v1
-        with:
-          perl-version: '5.34'
-          install-modules: XML::Simple Digest::SHA1
-
-      - name: Zip repository
-        id: zip
-        run: zip TIDAL -r API *.pm ProtocolHandler HTML Settings install.xml
-
       - name: Set Version
         id: set-version
         uses: actions/github-script@v6
@@ -42,6 +32,16 @@ jobs:
           body: TIDAL plugin release
           draft: false
           prerelease: false
+
+      - name: Zip repository
+        id: zip
+        run: zip TIDAL -r API *.pm ProtocolHandler HTML Settings install.xml
+
+      - name: Setup Perl
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: '5.34'
+          install-modules: XML::Simple Digest::SHA1       
 
       - name: Update SHA and Version in repo.xml
         id: tag
