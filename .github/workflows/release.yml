@@ -36,7 +36,7 @@ jobs:
       - name: Update SHA in repo.xml
         id: tag
         run: |
-          perl repo/release.pl TIDAL.zip ${{ steps.create_release.outputs.html_url }} 
+          perl repo/release.pl repo/repo.xml TIDAL.zip ${{ steps.create_release.outputs.html_url }} 
           cat repo/repo.xml
           
       - name: Upload Release Asset
