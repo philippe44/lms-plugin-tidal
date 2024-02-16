@@ -170,7 +170,7 @@ sub scanPlaylists { if (main::SCANNER) {
 
 	main::INFOLOG && $log->is_info && $log->info("Removing playlists...");
 	$progress->update(string('PLAYLIST_DELETED_PROGRESS'), $progress->done);
-	my $deletePlaylists_sth = $dbh->prepare_cached("DELETE FROM tracks WHERE url LIKE 'tidal://%.tdl'");
+	my $deletePlaylists_sth = $dbh->prepare_cached("DELETE FROM tracks WHERE url LIKE 'tidal://playlist:%'");
 	$deletePlaylists_sth->execute();
 
 	while (my ($accountName, $userId) = each %$accounts) {
@@ -194,7 +194,7 @@ sub scanPlaylists { if (main::SCANNER) {
 			$progress->update($accountName . string('COLON') . ' ' . $playlist->{title});
 			Slim::Schema->forceCommit;
 
-			my $url = "tidal://$uuid.tdl";
+			my $url = "tidal://playlist:$uuid";
 
 			my $playlistObj = Slim::Schema->updateOrCreate({
 				url        => $url,
@@ -262,7 +262,7 @@ sub needsUpdate { if (!main::SCANNER) {
 	my $checkFav = sub {
 		my ($userId, $type, $previous, $acb) = @_;
 
-		my $api = Plugins::TIDAL::API::Async->new({
+		Plugins::TIDAL::API::Async->new({
 			userId => $userId
 		})->getLatestCollectionTimestamp(sub {
 			my $timestamp = shift;
@@ -277,9 +277,9 @@ sub needsUpdate { if (!main::SCANNER) {
 			sub { $checkFav->($userId, 'artists', @_) },
 		);
 
-		# if (!$class->_ignorePlaylists) {
+		if (!$class->ignorePlaylists) {
 			push @tasks, sub { $checkFav->($userId, 'playlists', @_) };
-		# }
+		}
 
 		@tasks;
 	} sort {

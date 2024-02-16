@@ -65,6 +65,18 @@ sub postinitPlugin {
 		# 	};
 		# } );
 	}
+
+	if ( Slim::Utils::PluginManager->isEnabled('Plugins::LastMix::Plugin') ) {
+		eval {
+			require Plugins::LastMix::Services;
+		};
+
+		if (!$@) {
+			main::INFOLOG && $log->info("LastMix plugin is available - let's use it!");
+			require Plugins::TIDAL::LastMix;
+			Plugins::LastMix::Services->registerHandler('Plugins::TIDAL::LastMix', 'lossless');
+		}
+	}
 }
 
 sub onlineLibraryNeedsUpdate {
@@ -94,12 +106,12 @@ sub handleFeed {
 
 	my $items = [{
 		name => cstring($client, 'PLUGIN_TIDAL_FEATURES'),
-		image => __PACKAGE__->_pluginDataFor('icon'),
+		image => 'plugins/TIDAL/html/featured_MTL_svg_trophy.png',
 		type => 'link',
 		url => \&getFeatured,
 	},{
 		name => cstring($client, 'PLUGIN_TIDAL_MY_MIX'),
-		image => 'plugins/TIDAL/html/mix.png',
+		image => 'plugins/TIDAL/html/mix_MTL_svg_stream.png',
 		type => 'playlist',
 		url => \&getMyMixes,
 	},{
@@ -132,7 +144,7 @@ sub handleFeed {
 		items => [{
 			name => cstring($client, 'EVERYTHING'),
 			type  => 'search',
-			url   => \&search,
+			url   => \&searchEverything,
 		},{
 			name => cstring($client, 'PLAYLISTS'),
 			type  => 'search',
@@ -161,7 +173,7 @@ sub handleFeed {
 		url  => \&getGenres,
 	},{
 		name  => cstring($client, 'PLUGIN_TIDAL_MOODS'),
-		image => __PACKAGE__->_pluginDataFor('icon'),
+		image => 'plugins/TIDAL/html/moods_MTL_icon_celebration.png',
 		type => 'link',
 		url  => \&getMoods,
 	} ];
@@ -198,7 +210,7 @@ sub selectAccount {
 			}],
 			nextWindow => 'parent'
 		}
-	} values %{ $prefs->get('accounts') || {} } ];
+	} sort values %{ $prefs->get('accounts') || {} } ];
 
 	$cb->({ items => $items });
 }
@@ -360,7 +372,7 @@ sub getMoods {
 				name => $_->{name},
 				type => 'link',
 				url => \&getMoodPlaylists,
-				image => Plugins::TIDAL::API->getImageUrl($_, 'mood'),
+				image => Plugins::TIDAL::API->getImageUrl($_, 'usePlaceholder', 'mood'),
 				passthrough => [ { mood => $_->{path} } ],
 			};
 		} @{$_[0]} ];
@@ -394,11 +406,48 @@ sub search {
 	my ($client, $cb, $args, $params) = @_;
 
 	$args->{search} ||= $params->{query};
-	$args->{type} = "/$params->{type}";
+	$args->{type} = $params->{type};
 
 	getAPIHandler($client)->search(sub {
 		my $items = shift;
 		$items = [ map { _renderItem($client, $_) } @$items ] if $items;
+
+		$cb->( {
+			items => $items || []
+		} );
+	}, $args);
+
+}
+
+sub searchEverything {
+	my ($client, $cb, $args, $params) = @_;
+
+	$args->{search} ||= $params->{query};
+
+	getAPIHandler($client)->search(sub {
+		my $result = shift;
+		my $items = [];
+
+		if ($result->{topHit}) {
+			$result->{topHit}->{value}->{type} = $result->{topHit}->{type};
+			my $item = _renderItem($client, $result->{topHit}->{value});
+			push @$items, $item if $item;
+		}
+
+		foreach my $key (sort keys %$result) {
+			next if $key =~ /videos/ || !$result->{$key}->{totalNumberOfItems};
+
+			my $entries = $key ne 'tracks' ?
+						  $result->{$key}->{items} :
+						  Plugins::TIDAL::API->cacheTrackMetadata($result->{$key}->{items});
+
+			push @$items, {
+				name => cstring($client, $key =~ s/tracks/songs/r),
+				image => 'html/images/' . ($key ne 'tracks' ? $key : 'playall') . '.png',
+				type => 'outline',
+				items => [ map { _renderItem($client, $_) } @$entries ],
+			}
+		}
 
 		$cb->( {
 			items => $items || []
@@ -447,6 +496,7 @@ sub _renderPlaylist {
 		name => $item->{title},
 		line1 => $item->{title},
 		line2 => join(', ', map { $_->{name} } @{$item->{promotedArtists} || []}),
+		favorites_url => 'tidal://playlist:' . $item->{uuid},
 		type => 'playlist',
 		url => \&getPlaylist,
 		image => Plugins::TIDAL::API->getImageUrl($item),
@@ -472,9 +522,10 @@ sub _renderAlbum {
 		name => $title,
 		line1 => $item->{title},
 		line2 => $item->{artist}->{name},
+		favorites_url => 'tidal://album:' . $item->{id},
 		type => 'playlist',
 		url => \&getAlbum,
-		image => Plugins::TIDAL::API->getImageUrl($item),
+		image => Plugins::TIDAL::API->getImageUrl($item, 'usePlaceholder'),
 		passthrough => [{ id => $item->{id} }],
 	};
 }
@@ -492,13 +543,15 @@ sub _renderTrack {
 
 	my $title = $item->{title};
 	$title .= ' - ' . $item->{artist}->{name} if $addArtistToTitle;
+	my $url = "tidal://$item->{id}." . Plugins::TIDAL::API::getFormat();
 
 	return {
 		name => $title,
 		line1 => $item->{title},
 		line2 => $item->{artist}->{name},
 		on_select => 'play',
-		play => "tidal://$item->{id}." . Plugins::TIDAL::API::getFormat(),
+		url => $url,
+		play => $url,
 		playall => 1,
 		image => $item->{cover},
 	};
@@ -522,9 +575,11 @@ sub _renderArtist {
 	}];
 
 	foreach (keys %{$item->{mixes} || {}}) {
+		$log->warn($_) unless /^(?:TRACK|ARTIST)_MIX/;
 		next unless /^(?:TRACK|ARTIST)_MIX/;
 		push @$items, {
 			name => cstring($client, "PLUGIN_TIDAL_$_"),
+			favorites_url => 'tidal://mix:' . $item->{mixes}->{$_},
 			type => 'playlist',
 			url => \&getMix,
 			passthrough => [{ id => $item->{mixes}->{$_} }],
@@ -536,12 +591,12 @@ sub _renderArtist {
 		name => $item->{name},
 		type => 'outline',
 		items => $items,
-		image => Plugins::TIDAL::API->getImageUrl($item),
+		image => Plugins::TIDAL::API->getImageUrl($item, 'usePlaceholder'),
 	}
 	: {
 		%{$items->[0]},
 		name => $item->{name},
-		image => Plugins::TIDAL::API->getImageUrl($item),
+		image => Plugins::TIDAL::API->getImageUrl($item, 'usePlaceholder'),
 	};
 }
 
@@ -552,9 +607,10 @@ sub _renderMix {
 		name => $item->{title},
 		line1 => $item->{title},
 		line2 => join(', ', map { $_->{name} } @{$item->{artists}}),
+		favorites_url => 'tidal://mix:' . $item->{id},
 		type => 'playlist',
 		url => \&getMix,
-		image => Plugins::TIDAL::API->getImageUrl($item),
+		image => Plugins::TIDAL::API->getImageUrl($item, 'usePlaceholder'),
 		passthrough => [{ id => $item->{id} }],
 	};
 }
@@ -597,7 +653,7 @@ sub _renderCategory {
 		name => $item->{name},
 		type => 'outline',
 		items => $items,
-		image => Plugins::TIDAL::API->getImageUrl($item, 'genre'),
+		image => Plugins::TIDAL::API->getImageUrl($item, 'usePlaceholder', 'genre'),
 		passthrough => [ { path => $item->{path} } ],
 	};
 }

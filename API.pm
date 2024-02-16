@@ -64,7 +64,7 @@ sub getFormat {
 }
 
 sub getImageUrl {
-	my ($class, $data, $type) = @_;
+	my ($class, $data, $usePlaceholder, $type) = @_;
 
 	if ( my $coverId = $data->{cover} || $data->{image} || $data->{squareImage} || $data->{picture} || ($data->{album} && $data->{album}->{cover}) ) {
 
@@ -93,7 +93,7 @@ sub getImageUrl {
 		$data->{cover} = $image->{url} if $image;
 	}
 
-	return $data->{cover};
+	return $data->{cover} || (!main::SCANNER && $usePlaceholder && Plugins::TIDAL::Plugin->_pluginDataFor('icon'));
 }
 
 sub typeOfItem {
@@ -139,8 +139,7 @@ sub cacheTrackMetadata {
 		$entry = $entry->{item} if $entry->{item};
 
 		my $oldMeta = $cache->get( 'tidal_meta_' . $entry->{id}) || {};
-		# TODO - PH is not loaded in scanner mode!
-		my $icon = $class->getImageUrl($entry, 'track') || Plugins::TIDAL::Protocolhandler->getIcon();
+		my $icon = $class->getImageUrl($entry, 'usePlaceholder', 'track');
 
 		# consolidate metadata in case parsing of stream came first (huh?)
 		my $meta = {

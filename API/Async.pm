@@ -55,14 +55,18 @@ sub new {
 sub search {
 	my ($self, $cb, $args) = @_;
 
-	$self->_get('/search' . ($args->{type} || ''), sub {
+	my $type = $args->{type} || '';
+	$type = "/$type" if $type && $type !~ m{^/};
+
+	$self->_get('/search' . $type, sub {
 		my $result = shift;
 
-		my $items = $result->{items} if $result && ref $result;
+		my $items = $args->{type} ? $result->{items} : $result if $result && ref $result;
 		$items = Plugins::TIDAL::API->cacheTrackMetadata($items) if $args->{type} =~ /tracks/;
 
 		$cb->($items);
 	}, {
+		limit => $args->{limit},
 		query => $args->{search}
 	});
 }
@@ -101,13 +105,17 @@ sub artistTracks {
 	});
 }
 
+# try to remove duplicates
 sub _filterAlbums {
 	my ($albums) = shift || return;
 
-	# TODO - be a bit smarter about removing duplicates
+	my %seen;
 	return [ grep {
-		$_->{audioQuality} !~ /^(?:LOW|HI_RES)$/
-	} @$albums ];
+		scalar (grep /^LOSSLESS$/, @{$_->{mediaMetadata}->{tags} || []}) && !$seen{$_->{fingerprint}}++
+	} map { {
+			%$_,
+			fingerprint => join(':', $_->{artist}->{id}, $_->{title}, $_->{numberOfTracks}),
+	} } @$albums ];
 }
 
 sub featured {
@@ -239,24 +247,55 @@ sub playlist {
 	});
 }
 
+# User collections can be large - but have a known last updated timestamp.
+# Instead of statically caching data, then re-fetch everything, do a quick
+# lookup to get the latest timestamp first, then return from cache directly
+# if the list hasn't changed, or look up afresh if needed.
 sub getFavorites {
 	my ($self, $cb, $type) = @_;
 
 	return $cb->() unless $type;
 
 	my $userId = $self->userId || return $cb->();
+	my $cacheKey = "tidal_favs_$type:$userId";
 
-	$self->_get("/users/$userId/favorites/$type", sub {
-		my $result = shift;
+	my $lookupSub = sub {
+		$self->_get("/users/$userId/favorites/$type", sub {
+			my $result = shift;
 
-		my $items = [ map { $_->{item} } @{$result->{items} || []} ] if $result;
-		$items = Plugins::TIDAL::API->cacheTrackMetadata($items) if $items && $type eq 'tracks';
+			my $items = [ map { $_->{item} } @{$result->{items} || []} ] if $result;
+			$items = Plugins::TIDAL::API->cacheTrackMetadata($items) if $items && $type eq 'tracks';
 
-		$cb->($items);
-	},{
-		_ttl => USER_CONTENT_TTL,
-		limit => MAX_LIMIT,
-	});
+			$cache->set($cacheKey, {
+				items => $items,
+				timestamp => time(),
+			}, '1M') if $items;
+
+			$cb->($items);
+		},{
+			_ttl => USER_CONTENT_TTL,
+			limit => MAX_LIMIT,
+		});
+	};
+
+	# use cached data unless the collection has changed or is small anyway
+	my $cached = $cache->get($cacheKey);
+	if ($cached && ref $cached->{items} && scalar @{$cached->{items}} > DEFAULT_LIMIT) {
+		$self->getLatestCollectionTimestamp(sub {
+			my $timestamp = shift || 0;
+
+			if ($timestamp > $cached->{timestamp}) {
+				$lookupSub->();
+			}
+			else {
+				main::INFOLOG && $log->is_info && $log->info("Collection of type '$type' has not changed - using cached results");
+				$cb->($cached->{items});
+			}
+		}, $type);
+	}
+	else {
+		$lookupSub->();
+	}
 }
 
 sub getLatestCollectionTimestamp {
@@ -294,7 +333,6 @@ sub getLatestCollectionTimestamp {
 		limit => 4,
 		_nocache => 1,
 	});
-
 }
 
 sub getTrackUrl {

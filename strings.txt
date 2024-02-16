@@ -43,11 +43,13 @@ PLUGIN_TIDAL_ACCOUNT
 PLUGIN_TIDAL_FOLLOW_LINK
 	DE	Der folgende Link führt Sie zu TIDAL zur Authentifizierung. Bitte folgen Sie ihm, um dem Logitech Media Server Zugriff auf Ihr TIDAL-Konto zu gewähren. Sobald Sie die Anmeldung abgeschlossen haben, kommen Sie hierher zurück:
 	EN	The following link takes you to TIDAL for authentication. Please follow it grant Logitech Media Server access to your TIDAL account. Once you've completed sign-in come back here:
+	FR	Le lien suivant vous mènera à TIDAL pour authentification. Veuillez le suivre pour accorder à Logitech Media Server l'accès à votre compte TIDAL. Une fois votre inscription terminée, revenez ici :
 	IT	Il seguente link reindirizza all'autenticazione di TIDAL. Per favore, garantisci l'accesso al tuo account TIDAL a Logitech Media Server e torna in questa pagina una volta completato il login.
 
 PLUGIN_TIDAL_REQUIRES_CREDENTIALS
 	DE	Bitte melden Sie sich in den Server-Einstellungen unter Erweitert/TIDAL an TIDAL an.
 	EN	Please go to Settings/Advanced/TIDAL to authenticate with TIDAL.
+	FR	Veuillez vous connecter à TIDAL en accédant aux réglages du plugin TIDAL (paramètres/avancé/TIDAL ou préférences/serveur/TIDAL).
 	IT	Per autenticarti con TIDAL, vai a Impostazioni/Avanzate/TIDAL
 
 PLUGIN_TIDAL_SELECT_ACCOUNT
@@ -80,22 +82,14 @@ PLUGIN_TIDAL_QUALITY_DESC
 PLUGIN_TIDAL_MY_MIX
 	DE	Mein Mix
 	EN	My Mix
+	FR	My Mix
 	IT	I miei Mix
 
 PLUGIN_TIDAL_ARTIST_MIX
-	CS	Mix interpretů
-	DA	Miks baseret på tilfældig kunstner
 	DE	Interpretenmix
 	EN	Artist Mix
-	ES	Mezcla de artistas
-	FI	Artistivalikoima
-	FR	Artistes aléatoires
-	IT	Raccolta di artisti
-	NL	Artiestenmix
-	NO	Miks fra artister
-	PL	Składanka z różnych wykonawców
-	RU	Микс по исполнителям
-	SV	Artistmix
+	FR	Radio artiste
+	IT	Mix basato sull'artista
 
 PLUGIN_TIDAL_TRACK_MIX
 	CS	Mix skladeb
@@ -105,7 +99,7 @@ PLUGIN_TIDAL_TRACK_MIX
 	ES	Mezcla de canciones
 	FI	Kappalevalikoima
 	FR	Morceaux aléatoires
-	IT	Raccolta di brani
+	IT	Mix basato sul brano
 	NL	Nummermix
 	NO	Sangmiks
 	PL	Składanka utworów
@@ -132,7 +126,8 @@ PLUGIN_TIDAL_ALBUMS_PROGRESS
 	CS	Alba TIDALu
 	DE	TIDAL Alben
 	EN	TIDAL Albums
-	FR	TIDAL Albums
+	FR	Albums TIDAL
+	IT	TIDAL Albums
 	NL	TIDAL Albums
 
 PLUGIN_TIDAL_PROGRESS_READ_ALBUMS
@@ -140,13 +135,15 @@ PLUGIN_TIDAL_PROGRESS_READ_ALBUMS
 	DE	Lese Alben (%s)...
 	EN	Fetching Albums (%s)...
 	FR	Récupération des albums (%s)...
+	IT	Recupero gli album (%s)...
 	NL	Albums ophalen (%s)...
 
 PLUGIN_TIDAL_ARTISTS_PROGRESS
 	CS	Interpeti TIDALu
 	DE	TIDAL Interpreten
 	EN	TIDAL Artists
-	FR	TIDAL Artistes
+	FR	Artistes TIDAL
+	IT	TIDAL Artist
 	NL	TIDAL Artiesten
 
 PLUGIN_TIDAL_PROGRESS_READ_ARTISTS
@@ -154,13 +151,15 @@ PLUGIN_TIDAL_PROGRESS_READ_ARTISTS
 	DE	Lese Interpreten (%s)...
 	EN	Fetching Artists (%s)...
 	FR	Récupération des artistes (%s)...
+	IT	Recupero gli artisti (%s)...
 	NL	Artiesten ophalen (%s)...
 
 PLUGIN_TIDAL_PLAYLISTS_PROGRESS
 	CS	Seznamy skladeb TIDALu
 	DE	TIDAL Wiedergabelisten
 	EN	TIDAL Playlists
-	FR	TIDAL Listes de lecture
+	FR	Listes de lecture TIDAL
+	IT	TIDAL Playlists
 	NL	TIDAL Afspeellijsten
 
 PLUGIN_TIDAL_PROGRESS_READ_PLAYLISTS
@@ -168,5 +167,6 @@ PLUGIN_TIDAL_PROGRESS_READ_PLAYLISTS
 	DE	Lese Wiedergabelisten (%s)...
 	EN	Fetching Playlists (%s)...
 	FR	Récupération des listes de lecture (%s)...
+	IT	Recupero le playlists (%s)...
 	NL	Afspeellijsten ophalen (%s)...
 
