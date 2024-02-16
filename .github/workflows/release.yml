@@ -31,7 +31,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.zip.upload_url }} 
+          upload_url: ${{ steps.zip.outputs.upload_url }} 
           asset_path: ./TIDAL.zip
           asset_name: TIDAL.zip
           asset_content_type: application/octet-stream  
