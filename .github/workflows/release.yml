@@ -10,6 +10,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: TIDAL plugin release
+          draft: false
+          prerelease: false
 
       - name: Setup Perl
         uses: shogo82148/actions-setup-perl@v1
@@ -26,12 +38,4 @@ jobs:
         run: |
           perl repo/release.pl TIDAL.zip
 
-      - name: Upload ZIP asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.zip.outputs.upload_url }} 
-          asset_path: ./TIDAL.zip
-          asset_name: TIDAL.zip
-          asset_content_type: application/octet-stream  
+      
