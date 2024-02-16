@@ -20,12 +20,7 @@ jobs:
       - name: Zip repository
         id: zip
         run: zip TIDAL -r API *.pm ProtocolHandler HTML Settings install.xml
-
-      - name: Update SHA in repo.xml
-        id: tag
-        run: |
-          perl repo/release.pl TIDAL.zip
-       
+      
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -37,6 +32,12 @@ jobs:
           body: TIDAL plugin release
           draft: false
           prerelease: false
+
+      - name: Update SHA in repo.xml
+        id: tag
+        run: |
+          perl repo/release.pl TIDAL.zip ${{ steps.create_release.outputs.html_url }} 
+          cat repo.xml
           
       - name: Upload Release Asset
         id: upload-release-asset 
