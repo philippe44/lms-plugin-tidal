@@ -20,10 +20,15 @@ jobs:
               const xml = fs.readFileSync('install.xml', 'utf8');
               const version = xml.match(/<version>([^<]+)<\/version>/)[1];
               console.log(`version=${version} >> $GITHUB_OUTPUT`);
-              
+
+      - name: set it
+        id: set-version2
+        run: echo version='aaa' >> $GITHUB_OUTPUT
+        
       - name: use it
-        run: echo ${{ steps.set-version.outputs.version }}
-      
+        run: |
+          echo ${{ steps.set-version.outputs.version }}
+          echo ${{ steps.set-version2.outputs.version }}
         
       - name: Create Release
         id: create_release
