@@ -46,11 +46,31 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Update SHA in repo.xml
+      - name: Update SHA and Version in repo.xml
         id: tag
         run: |
           perl repo/release.pl repo/repo.xml ${{ steps.set-version.outputs.version }} TIDAL.zip ${{ steps.create_release.outputs.html_url }} 
           cat repo/repo.xml
+          - name: Update file
+          
+      - name: Update repo.xml without a commit
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const path = 'repo/repo.xml';
+            const content = fs.readFileSync(path, 'utf8');
+            const base64Content = Buffer.from(content).toString('base64');
+            const response = await github.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            path: path,
+            message: 'Update file',
+            content: base64Content,
+            sha: context.sha,
+            });
+            console.log(response.status);
           
       - name: Upload Release Asset
         id: upload-release-asset 
@@ -62,5 +82,7 @@ jobs:
           asset_path: ./TIDAL.zip
           asset_name: TIDAL.zip
           asset_content_type: application/zip
+
+          
 
       
