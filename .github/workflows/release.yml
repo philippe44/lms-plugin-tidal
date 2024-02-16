@@ -19,7 +19,7 @@ jobs:
               const fs = require('fs');
               const xml = fs.readFileSync('install.xml', 'utf8');
               const version = xml.match(/<version>([^<]+)<\/version>/)[1];
-              echo "{version}=${version}" >> $GITHUB_OUTPUT
+              echo "version=${version}" >> $GITHUB_OUTPUT
               #run: echo "::set-output name={name}::{value}"
               #console.log(`::set-output name=version::${version}`);
         
